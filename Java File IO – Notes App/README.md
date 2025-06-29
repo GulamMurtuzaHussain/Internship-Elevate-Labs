@@ -28,3 +28,6 @@ Notes Manager is a command-line utility written in Java to manage simple text no
 2. Compile the program:
    ```bash
    javac Practice.java
+3. To run:
+   ```bash
+   java Practice
