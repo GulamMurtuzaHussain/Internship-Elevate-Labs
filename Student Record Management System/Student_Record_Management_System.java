@@ -78,6 +78,7 @@ class Practice
         ArrayList<Student> students = new ArrayList<>();
         while(true)
         {
+            System.out.println("\n-------------------STUDENT RECORD------------------------");
             System.out.println("\n\n1. Add\n2. View\n3. Update\n4. Delete\n5. Exit");
             System.out.println("\nEnter the options: ");
             int choice = sc.nextInt();
