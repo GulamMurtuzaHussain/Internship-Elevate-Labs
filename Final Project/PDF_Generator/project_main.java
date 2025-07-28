@@ -6,15 +6,18 @@ import com.itextpdf.layout.*;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.properties.*;
 import com.opencsv.CSVReader;
-import java.io.FileReader;
+
+import java.io.*;
+
 import com.itextpdf.kernel.font.*;
 
 
-import java.io.File;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static java.lang.System.*;
 
@@ -52,7 +55,7 @@ class FieldsView
     @SuppressWarnings("all")
     public static StringBuilder some_fields(String table_name)
     {
-        out.println("Please enter the fields to display (use comma to separate): ");
+        out.println("Please enter the fields to display (use comma to separate, use * for displaying all): ");
         String[] fields = new String[]{sc.nextLine()};
 
         StringBuilder query = new StringBuilder("SELECT ");
@@ -478,7 +481,7 @@ class MultipleReportGenerator
     {
         out.println("Enter the name for the reports: ");
         String name = sc.nextLine();
-        File dir = new File("C:\\Users\\gulam\\Downloads\\"+name);
+        File dir = new File("C:\\Users\\gulam\\Downloads\\"+name+TABLE.folder_time_stamp());
         if(!dir.mkdir()){
             out.println("\nError creating folder......\nThe Folder might already exist.\n"); multiple_reports();
         }
@@ -507,7 +510,7 @@ class MultipleReportGenerator
                 RSMD = RS.getMetaData();
                 try
                 {
-                    PdfWriter writer = new PdfWriter("C:\\Users\\gulam\\Downloads\\"+name+"\\"+name+TABLE.file_time_stamp()+i+".pdf");
+                    PdfWriter writer = new PdfWriter("C:\\Users\\gulam\\Downloads\\"+name+TABLE.folder_time_stamp()+"\\"+name+TABLE.file_time_stamp()+i+".pdf");
                     PdfDocument pdf = new PdfDocument(writer);
                     Document document = new Document(pdf);
 
@@ -548,15 +551,48 @@ class MultipleReportGenerator
             conn.close();
             stmt.close();
             RS.close();
-           // sc.close();
+            // Folder to be zipped
+            File sourceFolder = new File("C:\\Users\\gulam\\Downloads\\"+name+TABLE.folder_time_stamp());
+
+            // Output ZIP file
+            File zipFile = new File(sourceFolder.getParent(), sourceFolder.getName() + ".zip");
+
+            FileOutputStream fos = new FileOutputStream(zipFile);
+            ZipOutputStream zos = new ZipOutputStream(fos);
+
+            zipFolder(sourceFolder, sourceFolder.getName(), zos);
+
+            zos.close();
+            fos.close();
+
+            System.out.println("Folder successfully zipped to: " + zipFile.getAbsolutePath());
         }
-        catch(SQLException e)
+        catch(SQLException | IOException e)
         {
             out.println("Oops—couldn't query your table. Did you spell it right?\n"
                     + "SQLite says: " + e.getMessage()); e.printStackTrace();
         }
+    }
+    public static void zipFolder(File folder, String parentFolder, ZipOutputStream zos) throws IOException {
+        for (File file : folder.listFiles()) {
+            if (file.isDirectory()) {
+                // Recursively zip subfolders
+                zipFolder(file, parentFolder + "/" + file.getName(), zos);
+            } else {
+                FileInputStream fis = new FileInputStream(file);
+                ZipEntry zipEntry = new ZipEntry(parentFolder + "/" + file.getName());
+                zos.putNextEntry(zipEntry);
 
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = fis.read(buffer)) >= 0) {
+                    zos.write(buffer, 0, length);
+                }
 
+                zos.closeEntry();
+                fis.close();
+            }
+        }
     }
 }
 
