@@ -55,7 +55,7 @@ A Java-based desktop application to generate **professional PDF reports** of emp
 ---
 
 ## How to Run
- -- Go to folder where the .jar file is saved
+ Go to folder where the .jar file is saved
  
      java -jar PDF_Generator.jar
 
