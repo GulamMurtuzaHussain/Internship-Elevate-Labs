@@ -32,7 +32,6 @@ A Java-based desktop application to generate **professional PDF reports** of emp
 ### 🔧 Prerequisites
 
 - Java 11 or higher installed
-- Maven installed
 - SQLite database or CSV file with employee data
 
 ---
